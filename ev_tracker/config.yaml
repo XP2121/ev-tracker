@@ -1,0 +1,22 @@
+name: EV Tracker
+version: "2.3.7"
+slug: ev_tracker
+description: Облік витрат на електромобіль у доларах і окупність
+arch: [amd64, aarch64]
+init: false
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:ev-station
+panel_title: Електромобіль
+homeassistant_api: true
+ports:
+  8099/tcp: null
+ports_description:
+  8099/tcp: Прямий доступ (для вкладки в дашборді)
+options:
+  fuel_url: https://index.minfin.com.ua/ua/markets/fuel/
+  usd_url: https://minfin.com.ua/ua/currency/auction/usd/buy/all/
+schema:
+  entity_id: str?
+  fuel_url: str?
+  usd_url: str?

@@ -1,0 +1,382 @@
+<!doctype html><html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Електромобіль</title>
+<style>
+:root{--bg:#0e131a;--c:#18202b;--l:#263140;--t:#e6edf3;--m:#8b98a5;--a:#2dd4bf;--o:#fb923c;--g:#a3e635}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:15px system-ui,sans-serif}
+#app{display:flex;min-height:100vh}
+#side{position:sticky;top:0;height:100vh;overflow-y:auto;align-self:flex-start;width:220px;flex:none;background:var(--c);border-right:1px solid var(--l);transition:margin-left .25s;padding:14px 10px}
+#app.closed #side{margin-left:-221px}
+#side h2{font-size:16px;margin:4px 10px 14px}
+#side button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--m);padding:11px 12px;border-radius:8px;font:inherit;cursor:pointer;margin-bottom:2px}
+#side button.on{background:#2dd4bf22;color:var(--a)}
+#content{flex:1;min-width:0}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--l);position:sticky;top:0;background:var(--bg);z-index:5}
+#burger{background:none;border:0;color:var(--t);font-size:22px;cursor:pointer;padding:0 6px}
+h1{font-size:18px;margin:0}h2.s{font-size:16px;margin:26px 0 12px;color:var(--m);font-weight:600}
+#bd{display:none}
+@media(max-width:699px){#side{position:fixed;z-index:20;top:0;bottom:0;left:0}#app.closed #side{margin-left:-241px}#app:not(.closed) #bd{display:block;position:fixed;inset:0;background:#0009;z-index:15}}
+main{max-width:1200px;margin:auto;padding:16px}
+section{display:none}section.on{display:block}
+.tg{display:grid;gap:10px;margin-bottom:12px}
+.t6{grid-template-columns:repeat(6,minmax(0,1fr))}.t4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1000px){.t6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.t6,.t4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tg .card{padding:12px;margin:0}
+.card{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:16px;margin-bottom:12px}
+.card small{color:var(--m);display:block}.big{font-size:20px;font-weight:600;margin-top:4px;overflow-wrap:anywhere}
+.wide{height:320px}
+.fr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;margin:10px 0}
+form.card{display:flex;flex-direction:column;gap:10px;max-width:520px}
+input,select{width:100%;min-width:0;max-width:100%;height:42px;padding:9px;background:var(--bg);color:var(--t);border:1px solid var(--l);border-radius:8px;font:inherit}
+input[type=month],input[type=date],input[type=datetime-local]{-webkit-appearance:none;appearance:none;display:block;text-align:left}
+input::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+.chk{display:flex;align-items:center;gap:8px;color:var(--t)}input[type=checkbox]{width:auto;height:auto;margin:0;display:inline-block}
+button.p,form button{background:var(--a);color:#06201c;border:0;border-radius:8px;padding:10px;min-height:42px;font:inherit;font-weight:600;cursor:pointer}
+summary{cursor:pointer;margin:4px 0}details>summary small{display:inline;color:var(--m)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--l)}
+.row small{color:var(--m)}
+.x{background:none!important;border:0;color:var(--o)!important;cursor:pointer;min-height:0!important;padding:4px 8px!important;font-weight:400!important;font-size:15px}
+.hint{color:var(--m);font-size:13px;margin:0;line-height:1.4}label small{color:var(--m);display:block;margin-bottom:4px}
+.pbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}.pbar select{flex:1;min-width:0;max-width:240px}
+.seg,.chips{display:flex;gap:6px;flex-wrap:wrap}.chips{margin-bottom:12px}
+.seg button,.chips button{background:var(--c);border:1px solid var(--l);color:var(--m);border-radius:8px;padding:8px 10px;font:inherit;cursor:pointer;white-space:nowrap}
+.seg button.on,.chips button.on{color:var(--a);border-color:var(--a)}
+.pgr{display:flex;align-items:center;gap:8px;margin:10px 0}.pgr select{width:auto;height:34px;padding:4px 8px}
+.cc.col .cb{display:none}.chh{display:flex;justify-content:space-between;cursor:pointer;font-weight:600;user-select:none}.chh span:last-child{transition:transform .2s;color:var(--m)}.cc.col .chh span:last-child{transform:rotate(-90deg)}
+.nudge{background:#fb923c22;border:1px solid #fb923c66;color:var(--o);padding:9px 12px;border-radius:10px;margin-bottom:12px}
+textarea{width:100%;background:var(--bg);color:var(--t);border:1px solid var(--l);border-radius:8px;padding:9px;font:12px monospace;margin:8px 0}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;margin-right:6px}
+/* Season cards: make all three driving indicators equally prominent. */
+.season-card{min-width:0}
+.season-card .season-metric{margin-top:12px}
+.season-card .season-label{font-size:12px;color:var(--m);line-height:1.35}
+.season-card .season-value{font-size:26px;font-weight:700;line-height:1.2;letter-spacing:-.45px;font-variant-numeric:tabular-nums;margin-top:3px;overflow-wrap:anywhere}
+.season-card .season-value .season-unit{font-size:14px;font-weight:500;letter-spacing:0;white-space:nowrap;color:var(--m)}
+.season-card .season-cons-unit{font-size:12px;line-height:1.35;color:var(--m);white-space:nowrap}
+.season-card .season-note{margin-top:9px}
+@media(max-width:560px){.season-card .season-value{font-size:24px}.season-card .season-value .season-unit{font-size:13px}}
+
+</style></head><body>
+<div id=app>
+<aside id=side><h2>⚡ Електромобіль</h2>
+<button data-t=o class=on>📊 Огляд</button><button data-t=c>🔌 Зарядки</button><button data-t=p>💰 Окупність</button><button data-t=s>🍂 Сезони</button><button data-t=n>⚙️ Налаштування</button></aside>
+<div id=bd></div>
+<div id=content>
+<header><button id=burger>☰</button><h1 id=ttl>Огляд</h1></header>
+<main>
+<section id=t-o class=on>
+<div class=nudge id=nudge style="display:none"></div>
+<div class=card><b>Додати показ одометра</b>
+<form id=rf data-k=odo><input type=hidden name=orig>
+<div class=fr>
+<label><small>Показ одометра, км</small><input type=number step=any name=km required></label>
+<label><small>Середня витрата, кВт·год/100 км</small><input type=number step=any name=cons></label>
+<label><small>Витрата бензину, л/100 км</small><input type=number step=any min=0.1 name=l100 required></label>
+<label><small>Ціна бензину А-95, ₴/л</small><input type=number step=any min=0 name=fuel required></label>
+<label><small>Курс, ₴ за $</small><input type=number step=any name=rate></label>
+<button id=rsub>Додати показ</button></div>
+<details id=rdet><summary>Додатково: дата й час, тариф</summary><div class=fr>
+<label><small>Дата й час</small><input type=datetime-local name=t required></label>
+<label><small>Тариф, ₴/кВт·год</small><input type=number step=any name=el></label></div></details></form>
+<div id=rlist></div></div>
+<div class=pbar><select class=psel></select><div class=seg><button data-m=m>Місяць</button><button data-m=y>Рік</button><button data-m=a>Весь час</button></div></div>
+<div id=tiles></div>
+<div class=cc data-c=c1></div><div class=cc data-c=c2></div><div class=cc data-c=c5></div>
+</section>
+<section id=t-c>
+<div class=pbar><select class=psel></select><div class=seg><button data-m=m>Місяць</button><button data-m=y>Рік</button><button data-m=a>Весь час</button></div></div>
+<div id=ctiles></div>
+ <div class=fr><button class=p type=button id=syncb>Оновити заряджання з Home Assistant</button></div>
+<details class=card><summary><b>+ Зарядка поза домом</b></summary>
+<form class=fr data-k=stc>
+<label><small>Дата й час</small><input type=datetime-local name=t required></label>
+<label><small>кВт·год</small><input type=number step=any name=kwh required></label>
+<label><small>Ціна за кВт·год, ₴</small><input type=number step=any name=price></label>
+<label><small>Або загальна сума, ₴</small><input type=number step=any name=cost></label>
+<label><small>Курс, ₴ за $</small><input type=number step=any name=rate required></label>
+<button>Додати зарядку</button></form></details>
+
+<div class=chips id=chips></div><div class=card id=feed></div>
+</section>
+<section id=t-p>
+<div class=pbar><span class=hint>Усереднення</span><div class=chips id=avgb style="margin:0"><button data-a=183>6 міс.</button><button data-a=365>12 міс.</button><button data-a=0>Весь час</button></div></div>
+<h2 class=s style="margin-top:8px">Окупність</h2>
+<div id=ptiles></div><div class=cc data-c=c3></div>
+<h2 class=s>Окупність з урахуванням витрат</h2>
+<div id=ntiles></div><div class=cc data-c=c7></div>
+<h2 class=s>Додаткові витрати</h2>
+<div class=pbar><select class=psel></select><div class=seg><button data-m=m>Місяць</button><button data-m=y>Рік</button><button data-m=a>Весь час</button></div></div>
+<div id=etiles></div><div class=cc data-c=c6></div>
+<div class=card><b>Додати витрату</b>
+<form class=fr data-k=exp>
+<label><small>Дата</small><input type=date name=d required></label>
+<label><small>На що витрачено</small><input type=text name=what required></label>
+<label><small>Сума, ₴</small><input type=number step=any name=amount required></label>
+<label><small>Курс, ₴ за $</small><input type=number step=any name=rate required></label>
+<label class=chk><input type=checkbox name=inkm checked> Враховувати в розрахунках</label>
+<button>Додати витрату</button></form>
+<div id=explist></div></div>
+</section>
+<section id=t-s>
+<h2 class=s style="margin-top:8px">Сезонна статистика</h2>
+<div style="max-width:260px;margin-bottom:12px"><select id=ysel></select></div>
+<div id=stiles></div>
+<div class=pbar><span class=hint>Графік за місяцями</span><div class=seg id=rangechart>
+<button type=button data-r=cons>Витрата</button><button type=button data-r=range>Запас ходу</button>
+</div></div>
+<div class=cc data-c=c4></div>
+<details class=card><summary><b>Запас ходу за кожним місяцем</b></summary>
+<div id=range-months></div></details>
+</section>
+<section id=t-n>
+<form class=card data-k=cfg><b>Налаштування</b>
+<label><small>Середня витрата за замовчуванням, кВт·год/100 км</small><input type=number step=any name=cons></label>
+<label><small>Втрати зарядки, %</small><input type=number step=any name=loss></label>
+<b>Орієнтовний запас ходу</b>
+<label><small>Доступна корисна ємність батареї, кВт·год</small><input type=number step=0.1 min=0.1 max=150 name=battery_kwh></label>
+<div class=fr>
+<label><small>Початковий заряд, %</small><input type=number step=1 min=1 max=100 name=range_soc_high></label>
+<label><small>Мінімальний залишок, %</small><input type=number step=1 min=0 max=99 name=range_soc_low></label>
+</div>
+<label><small>Мінімальний пробіг для достовірної статистики, км</small><input type=number step=1 min=0 max=10000 name=range_min_km></label>
+<p class=hint>Запас ходу рахується за витратою автомобіля без додавання втрат заряджання. Налаштування змінюють лише прогноз, не історію вимірювань.</p>
+<label><small>Витрата бензинового аналога, л/100 км</small><input type=number step=any name=l100></label>
+<label><small>Тариф на електрику, ₴/кВт·год</small><input type=number step=any name=el></label>
+<label><small>Ціна бензину А-95, ₴/л</small><input type=number step=any name=fuel><div class=hint id=st-fuel></div></label>
+<label><small>Курс (середній продаж), ₴ за $</small><input type=number step=any name=rate><div class=hint id=st-rate></div></label>
+<label><small>Вартість мого електромобіля, $</small><input type=number step=any name=car_usd></label>
+<label><small>Оновлення ціни бензину й курсу з інтернету</small><select name=auto><option value=1>Автоматично<option value=0>Вручну</select></label>
+<label><small>Нагадувати про показ одометра через, днів (0 - вимкнено)</small><input type=number step=1 name=remind></label>
+<b>Датчики енергії (для вкладки «Зарядки»)</b>
+ <p class=hint>Енергія береться з датчика кВт·год. Датчик Eveus розділяє сесії за фактичним від’єднанням автомобіля. Без нього використовується резервне групування за часом.</p>
+<label><small>Датчик 1, кВт·год</small><input type=text name=s1_entity list=ents autocomplete=off></label>
+<label><small>Назва датчика 1</small><input type=text name=s1_name placeholder="Реле 1"></label>
+<label><small>Стан підключення автомобіля для датчика 1 (Eveus)</small><input type=text name=s1_plug list=plugs placeholder="binary_sensor.eveus_ev_charger_car_connected" autocomplete=off></label>
+<label><small>Датчик 2, кВт·год (необов'язково)</small><input type=text name=s2_entity list=ents autocomplete=off></label>
+<label><small>Назва датчика 2</small><input type=text name=s2_name placeholder="Реле 2"></label>
+<label><small>Стан підключення для датчика 2 (необов’язково)</small><input type=text name=s2_plug list=plugs autocomplete=off></label>
+<datalist id=plugs></datalist>
+<datalist id=ents></datalist>
+<button>Зберегти</button><button type=button id=netb>Оновити з інтернету</button></form>
+<details class=card><summary><b>Резервна копія даних</b></summary>
+<div class=fr><button type=button class=p id=bx>Створити копію</button><label><small>Завантажити з файлу</small><input type=file id=bf accept=".json"></label></div>
+<textarea id=bt rows=6 placeholder="Тут з'явиться копія, або встав сюди раніше збережену"></textarea>
+<button type=button class=p id=bi>Імпортувати з поля</button></details>
+</section>
+<p class=hint id=foot style="text-align:center;margin:16px 0"></p>
+</main></div></div>
+<script src="static/chart.js"></script>
+<script src="static/range.js"></script>
+<script>
+let initialAvg=183,initialRangeMode='cons';
+try{initialAvg=+(localStorage.getItem('avg')??183);initialRangeMode=localStorage.getItem('rangeChartMode')==='range'?'range':'cons'}catch(e){}
+let D,ch={},sel=null,ysel=null,mode='m',osel=null,first=true,cf='all',avgN=initialAvg,rangeChartMode=initialRangeMode;const pg={};
+Chart.defaults.animation=false;
+const $=s=>document.querySelector(s),sum=(a,k)=>a.reduce((s,r)=>s+r[k],0),
+ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){return null}},
+MF=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+f=(n,d=0)=>n==null||isNaN(n)?'—':(+n).toLocaleString('uk',{maximumFractionDigits:d,minimumFractionDigits:d}),
+cut=s=>s.replace(/\s*р\.(?=,|$)/,''),
+mn=d=>cut(d.toLocaleDateString('uk-UA',{month:'long',year:'numeric'})),
+dd=t=>cut(new Date(t*1000).toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'})),
+dm=t=>new Date(t*1000).toLocaleDateString('uk-UA',{day:'numeric',month:'long'}),
+dtm=t=>cut(new Date(t*1000).toLocaleString('uk-UA',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})),
+tm=t=>new Date(t*1000).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'}),
+esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
+usd=n=>n==null||isNaN(n)?'—':'$'+f(n,2),
+L1=(label,data,c,o={})=>({label,data,borderColor:c,backgroundColor:c,...o}),
+NM=['remind','cons','loss','l100','el','fuel','rate','car_usd','auto','battery_kwh','range_soc_high','range_soc_low','range_min_km','s1_entity','s1_name','s2_entity','s2_name','s1_plug','s2_plug'];
+async function api(k,b){const r=await fetch('api/'+k,b?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}:{});if(!r.ok){let msg='Помилка '+r.status;try{msg+=': '+(await r.json()).error}catch(e){}alert(msg);return}D=await r.json();if(first){first=false;fill()}draw()}
+function tiles(id,a){const e=$('#'+id);e.className='tg t'+a.length;e.innerHTML=a.map(([k,v,s])=>`<div class=card><small>${k}</small><div class=big>${v}</div>${s?`<small>${s}</small>`:''}</div>`).join('')}
+function chart(id,title,sets,labels,o={}){$('#h-'+id).textContent=title;ch[id]?.destroy();delete ch[id];if($('#'+id).closest('.cc').classList.contains('col'))return;const ax={grid:{color:'#263140'},ticks:{color:'#8b98a5'}};let x=ax;
+if(!labels){const xs=sets.flatMap(s=>s.data.map(p=>p.x)),sp=xs.length&&new Date(Math.min(...xs)).getFullYear()!=new Date(Math.max(...xs)).getFullYear();
+x={...ax,type:'linear',ticks:{...ax.ticks,maxTicksLimit:6,callback:v=>(sp?dd:dm)(v/1000)}}}
+sets=sets.map(s=>({pointRadius:2,pointHoverRadius:5,borderWidth:2,cubicInterpolationMode:'monotone',spanGaps:true,showLine:true,fill:false,...s}));
+ch[id]=new Chart($('#'+id),{type:labels?'line':'scatter',data:{labels,datasets:sets},options:{maintainAspectRatio:false,interaction:{mode:labels?'index':'nearest',intersect:false},onClick:o.pick?(e,el)=>{if(el.length){sel=o.pick[el[0].index];mode='m';draw()}}:undefined,scales:{x,y:ax},
+plugins:{title:{display:false},legend:{labels:{color:'#c9d4df',boxWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+f(c.parsed.y,o.unit=='$'?2:1)+(o.unit?' '+o.unit:''),title:i=>o.full?o.full[i[0].dataIndex]:labels?i[0].label:dd(i[0].parsed.x/1000)}}}}})}
+const FL=['km','kwh0','kwh','home','pub','cost','costU','ice','iceU','sensor'];
+function byMonth(I){const M={};I.forEach(r=>{const a=r.t0*1000,b=r.t1*1000;
+for(let t=a;t<b;){const d=new Date(t),e=Math.min(b,new Date(d.getFullYear(),d.getMonth()+1,1).getTime()),w=(e-t)/(b-a),k=d.getFullYear()*12+d.getMonth();
+const m=M[k]??={k,t:new Date(d.getFullYear(),d.getMonth(),1),...Object.fromEntries(FL.map(q=>[q,0]))};
+FL.forEach(q=>m[q]+=r[q]*w);t=e}});
+return Object.values(M).sort((x,y)=>x.k-y.k).map(m=>({...m,save:m.ice-m.cost,cost100:m.cost/m.km*100,ice100:m.ice/m.km*100}))}
+function listCard(el,key,title,rows,sub){const s=pg[key]??={size:+(ls('sz_'+key)??10),page:0,open:false},n=rows.length,sz=s.size||Math.max(n,1),pages=Math.max(1,Math.ceil(n/sz));
+if(s.page>=pages)s.page=pages-1;if(s.page<0)s.page=0;
+$(el).innerHTML=`<details data-lk=${key}${s.open?' open':''}><summary><b>${title}</b> (${n})${sub?' · <small>'+sub+'</small>':''}</summary><div class=pgr><select data-sz=${key}>${[[10,'по 10'],[30,'по 30'],[0,'усі']].map(([v,t])=>`<option value=${v}${v==s.size?' selected':''}>${t}`).join('')}</select>${pages>1?`<button class=x data-pg=${key} data-d=-1>‹</button><span>Сторінка ${s.page+1} з ${pages}</span><button class=x data-pg=${key} data-d=1>›</button>`:''}</div>${rows.slice(s.page*sz,(s.page+1)*sz).join('')}</details>`}
+const lt=t=>new Date(t*1000-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+function fillCfg(root){const c={...D?.cfg,...D?.txt};document.querySelectorAll(root+' [name]').forEach(i=>{if(NM.includes(i.name))i.value=c[i.name]??(i.name=='auto'?1:i.name=='remind'?7:'')})}
+function fill(){const n=Date.now()/1000;document.querySelectorAll('input[type=datetime-local]').forEach(i=>i.value=lt(n));
+document.querySelectorAll('input[type=date]').forEach(i=>i.value=lt(n).slice(0,10));
+fillCfg('body');$('#rf [name=orig]').value='';$('#rsub').textContent='Додати показ'}
+function edit(t){const r=D.readings.find(x=>x.t==t),s=(n,v)=>{$(`#rf [name=${n}]`).value=v};
+s('t',lt(t));['km','cons','rate','el','fuel','l100'].forEach(n=>s(n,r[n]));s('orig',t);
+$('#rsub').textContent='Зберегти зміни';$('#rdet').open=true;$('#rf').scrollIntoView({behavior:'smooth'})}
+function draw(){
+const I=D.P,S=D.sum,car=D.cfg.car_usd,M=byMonth(I),lab=M.map(r=>mn(r.t)),now=new Date(),ck=now.getFullYear()*12+now.getMonth();
+if(sel==null)sel=ck;
+if(osel==null)osel=now.getFullYear();
+const yrs=[...new Set([...M.map(r=>r.t.getFullYear()),now.getFullYear()])].sort(),
+ks=[...new Set([...M.map(r=>r.k),ck])].sort((a,b)=>a-b),pk=M.map(r=>r.k),
+inS=r=>mode=='m'?r.k==sel:mode=='y'&&r.t.getFullYear()==osel,pr=M.map(r=>inS(r)?5:2),
+tk=ts=>{const d=new Date(ts*1000);return d.getFullYear()*12+d.getMonth()},
+inT=ts=>mode=='a'||(mode=='m'?tk(ts)==sel:new Date(ts*1000).getFullYear()==osel),
+X=mode=='a'?M:M.filter(inS),A=X.length?{kwh:sum(X,'kwh'),home:sum(X,'home'),sensor:sum(X,'sensor'),cost:sum(X,'cost'),costU:sum(X,'costU'),km:sum(X,'km'),ice:sum(X,'ice')}:{};
+A.save=A.ice-A.cost;A.cost100=A.cost/A.km*100;A.ice100=A.ice/A.km*100;
+const so=mode=='m'?ks.map(k=>`<option value=${k}${k==sel?' selected':''}>${mn(new Date(Math.floor(k/12),k%12,1))}</option>`).join(''):yrs.map(y=>`<option value=${y}${y==osel?' selected':''}>${y}</option>`).join('');
+document.querySelectorAll('.psel').forEach(s=>{s.innerHTML=so;s.style.display=mode=='a'?'none':''});
+document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m==mode));
+tiles('tiles',[['Спожито, кВт·год',f(A.kwh,1)],['Витрати на електро',usd(A.cost),'₴ '+f(A.costU)],['Пробіг, км',f(A.km)],['Електро, $/100 км',usd(A.cost100)],['Бензин, $/100 км',usd(A.ice100)],['Економія',usd(A.save)]]);
+chart('c1','Витрати за місяцями: електро і бензин, $',[L1('Електро',M.map(r=>r.cost),'#2dd4bf',{pointRadius:pr}),L1('Бензин',M.map(r=>r.ice),'#fb923c',{pointRadius:pr})],lab,{pick:pk,unit:'$'});
+chart('c2','Спожито за місяцями, кВт·год',[L1('Власні розетки (за розрахунком)',M.map(r=>r.home),'#2dd4bf',{pointRadius:pr}),L1('Зарядки поза домом',M.map(r=>r.pub),'#a78bfa',{pointRadius:pr})],lab,{pick:pk,unit:'кВт·год'});
+chart('c5','$ на 100 км за кожен період між показами одометра',[L1('Електро',I.map(r=>({x:r.t1*1000,y:r.cost/r.km*100})),'#2dd4bf'),L1('Бензин',I.map(r=>({x:r.t1*1000,y:r.ice/r.km*100})),'#fb923c')],null,{unit:'$'});
+const pm=Object.fromEntries(I.map(p=>[p.t1,p])),r0=D.readings[0],rem=D.cfg.remind??7,ld=r0?Math.floor((Date.now()/1000-r0.t)/86400):null;
+$('#nudge').style.display=rem>0&&(ld==null||ld>=rem)?'':'none';$('#nudge').textContent=ld==null?'Додай перший показ одометра':'Останній показ був '+ld+' дн. тому - додай новий';
+listCard('#rlist','rd','Показання одометра',D.readings.map(r=>{const p=pm[r.t];return `<div class=row><div>${dtm(r.t)} · ${f(r.km)} км<small>${p?`+${f(p.km)} км · ${f(r.cons,1)} кВт·год/100 км · бензин ${f(r.l100,1)} л/100 км по ${f(r.fuel,2)} ₴/л · курс ${f(r.rate,2)} · ${f(p.kwh,1)} кВт·год · ${usd(p.cost)} · економія ${usd(p.save)}`:'точка відліку'}</small></div><span><button class=x onclick="edit(${r.t})">Ред.</button><button class=x onclick="api('delodo',{t:${r.t}})">Видалити</button></span></div>`}),r0?`останній ${f(r0.km)} км, ${dd(r0.t)}`:'');
+const exs=D.exp.filter(e=>e.inkm).map(e=>({ts:Date.parse(e.d+'T12:00:00')/1000,u:e.usd})).sort((a,b)=>a.ts-b.ts),
+      totE=sum(exs,'u'),nowS=Date.now()/1000;
+let rS=0,dS=0;
+if(I.length){const ws=avgN?nowS-avgN*86400:-Infinity,s0=Math.max(ws,I[0].t0),tl=I.at(-1).t1;dS=(tl-s0)/86400;let sv=0;
+I.forEach(p=>{const a=Math.max(p.t0,s0),b=Math.min(p.t1,tl);if(b>a)sv+=p.save*(b-a)/(p.t1-p.t0)});
+rS=dS>0?sv/dS*30.44:0}
+const wl=dS<=0?'':avgN&&dS>=avgN?'за '+(avgN==183?6:12)+' міс.':'за '+f(dS/30.44,1)+' міс. даних',
+eta=m=>m==null?'—':mn(new Date(Date.now()+m*2629800000)),
+left=Math.max(car-S.cum,0),mS=rS>0&&car?left/rS:null,
+invested=(car||0)+totE,leftN=Math.max(invested-S.cum,0),mN=rS>0&&car?leftN/rS:null,
+deltaMonths=mN!=null&&mS!=null?Math.max(0,mN-mS):null;
+document.querySelectorAll('#avgb button').forEach(b=>b.classList.toggle('on',+b.dataset.a==avgN));
+tiles('ptiles',[['Накопичена економія',usd(S.cum),car?f(S.cum/car*100,2)+'% від вартості авто':''],['Вартість електромобіля',usd(car)],['Залишилось окупити',usd(left)],['Середня економія за місяць',usd(rS),wl],['Окупність через, років',mS==null?'—':f(mS/12,1)],['Орієнтовно',eta(mS)]]);
+tiles('ntiles',[['Загальні вкладення',usd(invested)],['Додаткові витрати',usd(totE)],
+['Накопичена економія',usd(S.cum)],['Залишилось окупити',usd(leftN)],
+['Окупність через, років',mN==null?'—':f(mN/12,1),mN==null?'':eta(mN)],
+['Збільшення терміну',deltaMonths==null?'—':f(deltaMonths,1)+' міс.']]);
+chart('c3','Накопичена економія від початку обліку, $',[L1('Економія',I.length?[{x:I[0].t0*1000,y:0},...I.map(r=>({x:r.t1*1000,y:r.cum}))]:[],'#a3e635',{fill:true,backgroundColor:'#a3e63540'})],null,{unit:'$'});
+// Investment expenses are one-time additions to principal, not ongoing costs.
+// Include their dated jumps even if there is no odometer reading that day.
+const checkpoints=I.length?[I[0].t0,...I.map(r=>r.t1)]:[],
+      firstTs=I.length?I[0].t0:null,
+      investmentEvents=firstTs==null?[]:exs.filter(e=>e.ts>=firstTs),
+      timeline=[...new Set([...checkpoints,...investmentEvents.map(e=>e.ts),
+        ...(investmentEvents.some(e=>e.ts>I.at(-1).t1)?[investmentEvents.at(-1).ts]:[])])].sort((a,b)=>a-b),
+      savingsAt=t=>{let total=0;for(const r of I){if(t>=r.t1)total=r.cum;
+        else if(t>r.t0){total=(r.cum-r.save)+r.save*(t-r.t0)/(r.t1-r.t0);break}
+        else break}return total},
+      baseCurve=[],extraCurve=[];
+for(const t of timeline){
+  const saved=savingsAt(t),before=exs.filter(e=>e.ts<t).reduce((a,e)=>a+e.u,0),
+        at=exs.filter(e=>e.ts==t).reduce((a,e)=>a+e.u,0);
+  baseCurve.push({x:t*1000,y:Math.max(0,car-saved)});
+  if(at)extraCurve.push({x:t*1000,y:Math.max(0,car+before-saved)});
+  extraCurve.push({x:t*1000,y:Math.max(0,car+before+at-saved)});
+}
+chart('c7','Залишок до окупності, $',[
+  L1('Без додаткових витрат',baseCurve,'#a3e635',{tension:0,cubicInterpolationMode:'default'}),
+  L1('З урахуванням витрат',extraCurve,'#fb923c',{tension:0,cubicInterpolationMode:'default'})
+],null,{unit:'$'});
+// Season year Y means December Y-1 + January/February Y.
+const ys=M.map(r=>r.t.getFullYear()),
+  seasonalYears=[...new Set(M.flatMap(r=>r.t.getMonth()===11?[r.t.getFullYear(),r.t.getFullYear()+1]:[r.t.getFullYear()]))].sort((a,b)=>a-b);
+if(ysel==null){const last=M.at(-1);ysel=last?(last.t.getFullYear()+(last.t.getMonth()===11?1:0)):now.getFullYear()}
+const yl=[...new Set([...seasonalYears,...(ysel=='all'?[]:[ysel])])].sort((a,b)=>a-b);
+$('#ysel').innerHTML=['all',...yl].map(y=>`<option value=${y}${y==ysel?' selected':''}>${y=='all'?'Усі роки':y}</option>`).join('');
+const rangeCfg=EVRange.settings(D.cfg),
+  rangeText=v=>v==null?'—':f(v)+' км',
+  seasonSpecs=[['❄️ Зима','winter'],['🌱 Весна','spring'],['☀️ Літо','summer'],['🍂 Осінь','autumn']],
+  seasonStats=seasonSpecs.map(([name,id])=>({name,id,...EVRange.aggregate(EVRange.seasonalRows(M,ysel,id),rangeCfg)}));
+// Three equally prominent values: dashboard consumption, full range, and user-defined SOC range.
+const seasonSection=$('#stiles');seasonSection.className='tg t4';
+seasonSection.innerHTML=seasonStats.map(a=>`<div class="card season-card"><b>${a.name}</b>
+  <div class="season-metric"><div class="season-label">Середня витрата</div>
+    <div class="season-value">${a.cons==null?'—':f(a.cons,1)}</div>
+    <div class="season-cons-unit">кВт·год/100 км</div></div>
+  <div class="season-metric"><div class="season-label">Запас ходу 100–0%</div>
+    <div class="season-value">${a.full==null?'—':f(a.full)}${a.full==null?'':' <span class="season-unit">км</span>'}</div></div>
+  <div class="season-metric"><div class="season-label">Запас ходу ${f(rangeCfg.high)}–${f(rangeCfg.low)}%</div>
+    <div class="season-value">${a.practical==null?'—':f(a.practical)}${a.practical==null?'':' <span class="season-unit">км</span>'}</div></div>
+  <small class="season-note">${a.enough?`Вартість: ${usd(a.cost100)}/100 км · Пробіг: ${f(a.km)} км`:
+    a.km>0?`Мало даних: ${f(a.km)} з ${f(rangeCfg.minKm)} км`:'Немає даних'}</small>
+</div>`).join('');
+const months=Array.from({length:12},(_,i)=>EVRange.aggregate(EVRange.monthlyRows(M,ysel,i+1),rangeCfg));
+document.querySelectorAll('#rangechart button').forEach(b=>b.classList.toggle('on',b.dataset.r===rangeChartMode));
+const cols=['#60a5fa','#60a5fa','#a3e635','#a3e635','#a3e635','#fb923c','#fb923c','#fb923c','#c084fc','#c084fc','#c084fc','#60a5fa'];
+const rangesLabel=`${f(rangeCfg.high)}–${f(rangeCfg.low)}%`;
+if(rangeChartMode==='range'){
+  chart('c4','Орієнтовний запас ходу за місяцями, км'+(ysel=='all'?'':', '+ysel),[
+    L1('100–0%',months.map(a=>a.full),'#2dd4bf',{spanGaps:false,pointRadius:3}),
+    L1(rangesLabel,months.map(a=>a.practical),'#a78bfa',{spanGaps:false,pointRadius:3})
+  ],['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'],{full:MF,unit:'км'});
+}else{
+  chart('c4','Витрата за місяцями, кВт·год/100 км'+(ysel=='all'?'':', '+ysel),[
+    L1('кВт·год/100 км',months.map(a=>a.cons),'#2dd4bf',
+    {spanGaps:false,pointBackgroundColor:cols,pointBorderColor:cols,pointRadius:3})
+  ],['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'],{full:MF,unit:'кВт·год/100 км'});
+}
+$('#range-months').innerHTML=months.map((a,i)=>`<div class=row>
+  <span><b>${MF[i]}</b><small>${a.enough?`${f(a.cons,1)} кВт·год/100 км · ${f(a.km)} км`:
+    a.km>0?`Недостатньо даних: ${f(a.km)} з ${f(rangeCfg.minKm)} км`:'Немає даних'}</small></span>
+  <span style="text-align:right">${a.enough?`100–0%: ${rangeText(a.full)}<small>${rangesLabel}: ${rangeText(a.practical)}</small>`:'—'}</span>
+</div>`).join('');
+const ekey=e=>+e.d.slice(0,4)*12+(+e.d.slice(5,7))-1,
+EX=D.exp.filter(e=>mode=='a'||(mode=='m'?ekey(e)==sel:+e.d.slice(0,4)==osel)),ET=sum(EX,'usd'),EK=sum(EX.filter(e=>e.inkm),'usd'),EU=sum(EX,'amount'),
+full=A.km?(A.cost+EK)/A.km*100:null,en=A.km?A.cost/A.km*100:null;
+tiles('etiles',[['Усього витрачено',usd(ET),'₴ '+f(EU)],['З них враховується',usd(EK)],['Записів',EX.length],['Повна ціна, $/100 км',usd(full)],['Лише енергія, $/100 км',usd(en)],['Різниця, $/100 км',usd(full==null?null:full-en)]]);
+const em={};D.exp.forEach(e=>{const k=ekey(e);(em[k]??={a:0,c:0}).a+=e.usd;if(e.inkm)em[k].c+=e.usd});
+const eks=Object.keys(em).map(Number),el=[];for(let k=Math.min(...eks);k<=Math.max(...eks);k++)el.push(k);
+chart('c6','Витрати за місяцями, $',[L1('Усього',el.map(k=>em[k]?.a??0),'#fb923c'),L1('Враховується',el.map(k=>em[k]?.c??0),'#a78bfa')],el.map(k=>mn(new Date(Math.floor(k/12),k%12,1))),{unit:'$'});
+listCard('#explist','exp','Витрати',EX.map(e=>`<div class=row><span>${dd(Date.parse(e.d+'T12:00:00')/1000)} · ${esc(e.what)}${e.inkm?'':' · не враховано'}<small>₴ ${f(e.amount)} · курс ${f(e.rate,2)}</small></span><span>${usd(e.usd)} <button class=x onclick="api('delexp',{id:${e.id}})">Видалити</button></span></div>`),'');
+const chargeTime=(start,end)=>{
+  const a=new Date(start*1000),b=new Date(end*1000),sameDay=a.toDateString()===b.toDateString(),
+        mins=Math.round((end-start)/60),hours=Math.floor(mins/60),minutes=mins%60;
+  return `${dtm(start)} – ${sameDay?tm(end):dtm(end)}, час: ${hours?hours:'00'} год. ${String(minutes).padStart(2,'0')} хв.`;
+};
+const COL={1:'#2dd4bf',2:'#a78bfa',x:'#fb923c'},tag=(k,n)=>`<span class=tag style="background:${COL[k]}33;color:${COL[k]}">${esc(n)}</span>`,
+SS=D.sessions.filter(s=>inT(s.t0)),ST=D.stc.filter(s=>inT(s.t)),
+feed=[...SS.map(s=>({ts:s.t0,k:s.entity,h:`<div class=row><span>${tag(s.slot,s.name)}${chargeTime(s.t0,s.t1)}<small>Середня потужність: ${f(s.average_power,2)} кВт · Найбільша середня: ${f(s.peak,2)} кВт</small></span><span><b>${f(s.kwh,2)} кВт·год</b><small>Енергія сесії</small></span></div>`})),
+...ST.map(s=>({ts:s.t,k:'x',h:`<div class=row><span>${tag('x','Поза домом')}${dtm(s.t)}<small>₴ ${f(s.cost)} (${f(s.cost/s.kwh,2)} ₴/кВт·год) · курс ${f(s.rate,2)}</small></span><span>${f(s.kwh,1)} кВт·год · ${usd(s.usd)} <button class=x onclick="api('delstc',{id:${s.id}})">Видалити</button></span></div>`}))].sort((a,b)=>b.ts-a.ts),
+bySlot=D.sources.map(s=>`${esc(s.name)}: ${f(sum(SS.filter(x=>x.entity==s.entity),'kwh'),1)}`).join(' · ');
+tiles('ctiles',[['Зарядок',feed.length],['Спожито за датчиками, кВт·год',f(sum(SS,'kwh'),1),bySlot],['Поза домом, кВт·год',f(sum(ST,'kwh'),1),usd(sum(ST,'usd'))],['Макс. середня потужність за інтервал, кВт',SS.length?f(Math.max(...SS.map(s=>s.peak)),1):'—'],['За розрахунком (власні розетки), кВт·год',f(A.home,1)],['Різниця датчики/розрахунок, %',A.sensor>0&&A.home>0?f((A.sensor/A.home-1)*100,1):'—']]);
+if(!['all','x',...D.sources.map(s=>s.entity)].includes(cf))cf='all';
+$('#chips').innerHTML=[['all','Усі'],...D.sources.map(s=>[s.entity,s.name]),['x','Поза домом']].map(([k,n])=>`<button data-f=${k} class="${cf==k?'on':''}">${esc(n)}</button>`).join('');
+listCard('#feed','feed','Зарядки',feed.filter(i=>cf=='all'||i.k==cf).map(i=>i.h),'');
+const st=(v,t)=>{const when=t?' · '+dtm(+t):'';return !v?(t?'Останнє оновлення'+when:'Ще не оновлено'):v=='ok'?'Оновлено'+when:v+(t?' · успішно'+when:'')};
+$('#st-fuel').textContent=st(D.net.fuel,D.net.fuel_at);$('#st-rate').textContent=st(D.net.rate,D.net.rate_at);
+$('#foot').textContent='Оновлено '+now.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+' · версія '+D.ver+' · датчики: '+(D.slots.map(s=>s.name).join(', ')||'не задано')}
+function warn(k,b){const m=[],c=D.cfg;if(!['odo','stc','exp'].includes(k))return m;
+if(k=='odo'&&D.readings.length){const o=D.readings.filter(r=>r.t!=b.orig),pv=o.filter(r=>r.t<b.t).sort((x,y)=>y.t-x.t)[0],nx=o.filter(r=>r.t>b.t).sort((x,y)=>x.t-y.t)[0];
+if(pv&&b.km<pv.km)m.push('Показ менший за попередній ('+f(pv.km)+' км).');if(nx&&b.km>nx.km)m.push('Показ більший за наступний ('+f(nx.km)+' км).');
+if(b.cons!=null&&(b.cons<8||b.cons>35))m.push('Витрата '+f(b.cons,1)+' кВт·год/100 км виглядає незвично.')}
+if(c.rate&&b.rate!=null&&Math.abs(b.rate/c.rate-1)>.1)m.push('Курс '+f(b.rate,2)+' відрізняється від поточного ('+f(c.rate,2)+') більш ніж на 10%.');return m}
+document.addEventListener('submit',async e=>{e.preventDefault();const F=e.target,b={},k=F.dataset.k;
+new FormData(F).forEach((v,n)=>{const y=F.elements[n].type;b[n]=y=='number'?(v===''?null:+v):y=='datetime-local'?new Date(v).getTime()/1000:v});
+if(k=='stc'){if(b.cost==null&&b.price!=null)b.cost=b.kwh*b.price;delete b.price;if(b.cost==null){alert('Вкажи ціну за кВт·год або загальну суму');return}}
+if(k=='odo'){if(b.orig===''||b.orig==null)delete b.orig;else b.orig=+b.orig;if(D.readings.length&&['cons','rate','el','fuel','l100'].some(n=>b[n]==null)){alert('Вкажи витрату електроенергії, витрату та ціну бензину, курс і тариф (або заповни їх у Налаштуваннях)');return}}
+const w=warn(k,b);if(w.length&&!confirm(w.join('\n')+'\n\nВсе одно зберегти?'))return;
+await api(k,b);fill()});
+document.addEventListener('click',e=>{const h=e.target.closest('.chh');if(h){const k=h.parentElement;k.classList.toggle('col');ls('col_'+h.dataset.c,k.classList.contains('col')?1:0);draw();return}
+const b=e.target.closest('[data-pg]');if(b){pg[b.dataset.pg].page+=+b.dataset.d;draw();return}
+const c=e.target.closest('.chips button');if(c){cf=c.dataset.f;pg.feed&&(pg.feed.page=0);draw()}});
+document.addEventListener('change',e=>{const z=e.target.dataset?.sz;if(z){pg[z].size=+e.target.value;pg[z].page=0;ls('sz_'+z,e.target.value);draw()}});
+document.addEventListener('toggle',e=>{const k=e.target.dataset?.lk;if(k&&pg[k])pg[k].open=e.target.open},true);
+const narrow=()=>innerWidth<700;
+function setSide(o){$('#app').classList.toggle('closed',!o);ls('side',o?1:0)}
+function go(t){document.querySelectorAll('#side button,section').forEach(x=>x.classList.remove('on'));const b=$(`#side button[data-t=${t}]`);b.classList.add('on');$('#t-'+t).classList.add('on');$('#ttl').textContent=b.textContent.slice(3);
+if(narrow())setSide(false);Object.values(ch).forEach(c=>c.resize());if(t=='n')fillCfg('#t-n')}
+document.querySelectorAll('#side button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+$('#burger').onclick=()=>setSide($('#app').classList.contains('closed'));$('#bd').onclick=()=>setSide(false);
+const so0=ls('side');setSide(so0==null?true:so0=='1');
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;draw()});
+document.querySelectorAll('.psel').forEach(s=>s.onchange=e=>{if(mode=='m')sel=+e.target.value;else osel=+e.target.value;draw()});
+$('#ysel').onchange=e=>{ysel=e.target.value=='all'?'all':+e.target.value;draw()};
+document.querySelectorAll('#rangechart button').forEach(b=>b.onclick=()=>{rangeChartMode=b.dataset.r;ls('rangeChartMode',rangeChartMode);draw()});
+$('#netb').onclick=async()=>{await api('net',{});fillCfg('body')};
+$('#syncb').onclick=async()=>{const b=$('#syncb');b.disabled=true;try{await api('sync',{})}finally{b.disabled=false}};
+const live=()=>{const a=document.activeElement;if(!document.hidden&&!(a&&/INPUT|SELECT/.test(a.tagName)))api('data')};
+setInterval(live,60000);document.addEventListener('visibilitychange',live);
+document.querySelectorAll('.cc').forEach(e=>{const c=e.dataset.c;e.className='card cc';e.innerHTML=`<div class=chh data-c=${c}><span id=h-${c}></span><span>▾</span></div><div class="cb wide"><canvas id=${c}></canvas></div>`;if(ls('col_'+c)=='1')e.classList.add('col')});
+document.querySelectorAll('#avgb button').forEach(b=>b.onclick=()=>{avgN=+b.dataset.a;ls('avg',avgN);draw()});
+$('#bx').onclick=async()=>{const t=JSON.stringify(await(await fetch('api/export')).json());$('#bt').value=t.length<1000000?t:'Архів більший за 1 МБ. Повна копія завантажена у файл; для імпорту використай вибір файлу.';try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'application/json'}));a.download='ev_tracker_'+new Date().toISOString().slice(0,10)+'.json';a.click()}catch(e){}};
+$('#bf').onchange=async e=>{const fl=e.target.files[0];if(fl)$('#bt').value=await fl.text()};
+$('#bi').onclick=async()=>{let o;try{o=JSON.parse($('#bt').value)}catch(e){alert('Некоректна копія');return}if(!confirm('Імпорт замінить усі поточні дані. Продовжити?'))return;await api('import',o);fill()};
+fetch('api/entities').then(r=>r.json()).then(a=>{$('#ents').innerHTML=a.map(e=>`<option value="${e.id}">${esc(e.name)}`).join('')}).catch(()=>{});
+api('data');
+</script></body></html>
